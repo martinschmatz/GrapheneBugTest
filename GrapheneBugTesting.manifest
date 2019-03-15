@@ -1,0 +1,56 @@
+# also see here https://github.com/oscarlab/graphene/wiki/SGX-Manifest-Syntax
+# also see here https://github.com/oscarlab/graphene/wiki/Manifest-Syntax
+
+loader.preload = file:/data/GrapheneTest/CLionVersion/graphene/Runtime/libsysdb.so
+
+loader.exec = file:/data/GrapheneTest/GrapheneBugTesting/cmake-build-debug/GrapheneBugTesting
+loader.execname = /data/GrapheneTest/GrapheneBugTesting/cmake-build-debug/GrapheneBugTesting
+loader.env.LD_LIBRARY_PATH = /lib:/lib/x86_64-linux-gnu:/usr/lib:/usr/lib/x86_64-linux-gnu
+
+loader.syscall_symbol = syscalldb
+
+# uncomment one of the two lines if you want / want not Graphene inline messages
+#loader.debug_type = inline
+loader.debug_type = none
+
+# get some support from the file system
+
+# for the runtime
+fs.mount.lib1.type = chroot
+fs.mount.lib1.path = /lib
+fs.mount.lib1.uri = file:/data/GrapheneTest/CLionVersion/graphene/Runtime
+
+# for libgcc
+fs.mount.lib2.type = chroot
+fs.mount.lib2.path = /lib/x86_64-linux-gnu
+fs.mount.lib2.uri = file:/lib/x86_64-linux-gnu
+
+# for libstdc++
+fs.mount.usr.type = chroot
+fs.mount.usr.path = /usr
+fs.mount.usr.uri = file:/usr
+
+# set generous enclave resources
+sys.brk.size = 64M
+sys.stack.size = 16M
+sgx.enclave_size = 1G
+glibc.heap_size = 16M
+
+#################################################
+# Specify the max number of threads
+# Set sgx.thread_num to >=17 (= 15 + 1 + 1) and it works,
+# set it o <17 and it fails, even though only
+# 10 user threads are actve at any point in time
+sgx.thread_num = 15
+#################################################
+
+# Get help from some libraries (from Graphene)
+sgx.trusted_files.ld = file:/data/GrapheneTest/CLionVersion/graphene/Runtime/ld-linux-x86-64.so.2
+sgx.trusted_files.libpthread = file:/data/GrapheneTest/CLionVersion/graphene/Runtime/libpthread.so.0
+sgx.trusted_files.libc = file:/data/GrapheneTest/CLionVersion/graphene/Runtime/libc.so.6
+sgx.trusted_files.libm2 = file:/data/GrapheneTest/CLionVersion/graphene/Runtime/libm.so.6
+#sgx.trusted_files.libdl1 = file:/data/GrapheneTest/CLionVersion/graphene/Runtime/libdl.so.2
+
+# Get some more libraries (from Linux)
+sgx.trusted_files.libstdc = file:/usr/lib/x86_64-linux-gnu/libstdc++.so.6
+sgx.trusted_files.libgcc = file:/lib/x86_64-linux-gnu/libgcc_s.so.1
